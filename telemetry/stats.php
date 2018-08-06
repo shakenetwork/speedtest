@@ -109,15 +109,15 @@ if($stats_password=="PASSWORD"){
 			}else die();
 	?>
 		<table>
-			<tr><th>Test ID</th><td><?=$id ?></td></tr>
-			<tr><th>Date and time</th><td><?=$timestamp ?></td></tr>
-			<tr><th>IP and ISP Info</th><td><?=$ip ?><br/><?=$ispinfo ?></td></tr>
-			<tr><th>User agent and locale</th><td><?=$ua ?><br/><?=$lang ?></td></tr>
-			<tr><th>Download speed</th><td><?=$dl ?></td></tr>
-			<tr><th>Upload speed</th><td><?=$ul ?></td></tr>
-			<tr><th>Ping</th><td><?=$ping ?></td></tr>
-			<tr><th>Jitter</th><td><?=$jitter ?></td></tr>
-			<tr><th>Log</th><td><?=$log ?></td></tr>
+			<tr><th>Test ID</th><td><?=htmlspecialchars($id, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Date and time</th><td><?=htmlspecialchars($timestamp, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>IP and ISP Info</th><td><?=$ip ?><br/><?=htmlspecialchars($ispinfo, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>User agent and locale</th><td><?=$ua ?><br/><?=htmlspecialchars($lang, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Download speed</th><td><?=htmlspecialchars($dl, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Upload speed</th><td><?=htmlspecialchars($ul, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Ping</th><td><?=htmlspecialchars($ping, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Jitter</th><td><?=htmlspecialchars($jitter, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Log</th><td><?=htmlspecialchars($log, ENT_HTML5, 'UTF-8') ?></td></tr>
 		</table>
 	<?php
 		}
