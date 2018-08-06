@@ -17,6 +17,11 @@ var ulProgress = 0 //progress of upload test 0-1
 var pingProgress = 0 //progress of ping+jitter test 0-1
 var testId = 'noID' //test ID (sent back by telemetry if used, the string 'noID' otherwise)
 
+var HTML_ESCAPE_MAP={'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;',"'": '&#039;'};
+String.prototype.escapeHtml=function(){
+  return this.replace(/[&<>"']/g, function(m){return HTML_ESCAPE_MAP[m]});
+}
+
 var log='' //telemetry log
 function tlog(s){log+=Date.now()+': '+s+'\n'}
 function twarn(s){log+=Date.now()+' WARN: '+s+'\n'; console.warn(s)}
@@ -176,10 +181,10 @@ function getIp (done) {
 	tlog("IP: "+xhr.responseText)
 	try{
 		var data=JSON.parse(xhr.responseText)
-		clientIp=data.processedString
+		clientIp=data.processedString.escapeHtml()
 		ispInfo=data.rawIspInfo
 	}catch(e){
-		clientIp = xhr.responseText
+		clientIp = xhr.responseText.escapeHtml()
 		ispInfo=''
 	}
     done()
