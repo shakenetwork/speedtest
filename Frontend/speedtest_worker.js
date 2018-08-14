@@ -1,5 +1,5 @@
 /*
-	HTML5 Speedtest v4.6.1
+	HTML5 Speedtest v4.6.1 MPOT
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License
@@ -37,6 +37,7 @@ var settings = {
   getIp_ispInfo_distance: 'km', //km or mi=estimate distance from server in km/mi; set to false to disable distance estimation. getIp_ispInfo must be enabled in order for this to work
   xhr_dlMultistream: 10, // number of download streams to use (can be different if enable_quirks is active)
   xhr_ulMultistream: 3, // number of upload streams to use (can be different if enable_quirks is active)
+  xhr_ul_sendPostRequestBeforeStartingTest: true, //if set to true, a single empty POST request will be sent to the upload test URL. This bypasses bugs with CORS headers in some browsers.
   xhr_multistreamDelay: 300, //how much concurrent requests should be delayed
   xhr_ignoreErrors: 1, // 0=fail on errors, 1=attempt to restart a stream if it fails, 2=ignore all errors
   xhr_dlUseBlob: false, // if set to true, it reduces ram usage but uses the hard drive (useful with large garbagePhp_chunkSize and/or high xhr_dlMultistream)
@@ -131,7 +132,7 @@ this.addEventListener('message', function (e) {
       if(typeof s.telemetry_level !== 'undefined') settings.telemetry_level = s.telemetry_level === 'basic' ? 1 : s.telemetry_level === 'full' ? 2 : 0; // telemetry level
       //transform test_order to uppercase, just in case
       settings.test_order=settings.test_order.toUpperCase();
-    } catch (e) { twarn('Possible error in custom test settings. Some settings may not be applied. Exception: '+e) }
+    } catch (e) { twarn('Possible error in custom test settings. Some settings might not have been applied. Exception: '+e) }
     // run the tests
     tlog(JSON.stringify(settings))
     test_pointer=0;
@@ -282,8 +283,8 @@ function dlTest (done) {
     }
   }.bind(this), 200)
 }
-// upload test, calls done function whent it's over
 
+// upload test, calls done function whent it's over
 var ulCalled = false // used to prevent multiple accidental calls to ulTest
 function ulTest (done) {
   tlog('ulTest')
@@ -300,107 +301,120 @@ function ulTest (done) {
   try { r = new Uint32Array(r); for (var i = 0; i < r.length; i++)r[i] = Math.random()*maxInt } catch (e) { }
   reqsmall.push(r)
   reqsmall = new Blob(reqsmall)
-  var totLoaded = 0.0, // total number of transmitted bytes
-    startT = new Date().getTime(), // timestamp when test was started
-    graceTimeDone = false, //set to true after the grace time is past
-    failed = false // set to true if a stream fails
-  xhr = []
-  // function to create an upload stream. streams are slightly delayed so that they will not end at the same time
-  var testStream = function (i, delay) {
-    setTimeout(function () {
-      if (testStatus !== 3) return // delayed stream ended up starting after the end of the upload test
-      tlog('ul test stream started '+i+' '+delay)
-      var prevLoaded = 0 // number of bytes transmitted last time onprogress was called
-      var x = new XMLHttpRequest()
-      xhr[i] = x
-      var ie11workaround
-      if (settings.forceIE11Workaround) ie11workaround = true; else {
-        try {
-          xhr[i].upload.onprogress
-          ie11workaround = false
-        } catch (e) {
-          ie11workaround = true
-        }
-      }
-      if (ie11workaround) {
-        // IE11 workarond: xhr.upload does not work properly, therefore we send a bunch of small 256k requests and use the onload event as progress. This is not precise, especially on fast connections
-        xhr[i].onload = function () {
-        tlog('ul stream progress event (ie11wa)')
-          totLoaded += reqsmall.size;
-          testStream(i, 0)
-        }
-        xhr[i].onerror = function () {
-          // error, abort
-          tlog('ul stream failed (ie11wa)')
-          if (settings.xhr_ignoreErrors === 0) failed = true //abort
-          try { xhr[i].abort() } catch (e) { }
-          delete (xhr[i])
-          if (settings.xhr_ignoreErrors === 1) testStream(i,0); //restart stream
-        }
-        xhr[i].open('POST', settings.url_ul + url_sep(settings.url_ul) + 'r=' + Math.random(), true) // random string to prevent caching
-        xhr[i].setRequestHeader('Content-Encoding', 'identity') // disable compression (some browsers may refuse it, but data is incompressible anyway)
-        xhr[i].send(reqsmall)
-      } else {
-        // REGULAR version, no workaround
-        xhr[i].upload.onprogress = function (event) {
-          tlog('ul stream progress event '+i+' '+event.loaded)
-          if (testStatus !== 3) { try { x.abort() } catch (e) { } } // just in case this XHR is still running after the upload test
-          // progress event, add number of new loaded bytes to totLoaded
-          var loadDiff = event.loaded <= 0 ? 0 : (event.loaded - prevLoaded)
-          if (isNaN(loadDiff) || !isFinite(loadDiff) || loadDiff < 0) return // just in case
-          totLoaded += loadDiff
-          prevLoaded = event.loaded
-        }.bind(this)
-        xhr[i].upload.onload = function () {
-          // this stream sent all the garbage data, start again
-          tlog('ul stream finished '+i)
-          testStream(i, 0)
-        }.bind(this)
-        xhr[i].upload.onerror = function () {
-          tlog('ul stream failed '+i)
-          if (settings.xhr_ignoreErrors === 0) failed=true //abort
-          try { xhr[i].abort() } catch (e) { }
-          delete (xhr[i])
-          if (settings.xhr_ignoreErrors === 1) testStream(i, 0) //restart stream
-        }.bind(this)
-        // send xhr
-        xhr[i].open('POST', settings.url_ul + url_sep(settings.url_ul) + 'r=' + Math.random(), true) // random string to prevent caching
-        xhr[i].setRequestHeader('Content-Encoding', 'identity') // disable compression (some browsers may refuse it, but data is incompressible anyway)
-        xhr[i].send(req)
-      }
-    }.bind(this), 1)
-  }.bind(this)
-  // open streams
-  for (var i = 0; i < settings.xhr_ulMultistream; i++) {
-    testStream(i, settings.xhr_multistreamDelay * i)
-  }
-  // every 200ms, update ulStatus
-  interval = setInterval(function () {
-	tlog('UL: '+ulStatus+(graceTimeDone?'':' (in grace time)'))
-    var t = new Date().getTime() - startT
-	if (graceTimeDone) ulProgress = t / (settings.time_ul * 1000)
-    if (t < 200) return
-    if (!graceTimeDone){
-      if (t > 1000 * settings.time_ulGraceTime){
-        if (totLoaded > 0){ // if the connection is so slow that we didn't get a single chunk yet, do not reset
-          startT = new Date().getTime()
-          totLoaded = 0.0;
-        }
-        graceTimeDone = true;
-      }
-    }else{
-      var speed = totLoaded / (t / 1000.0)
-      ulStatus = ((speed * 8 * settings.overheadCompensationFactor)/(settings.useMebibits?1048576:1000000)).toFixed(2) // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
-      if (((t / 1000.0) > settings.time_ul && ulStatus > 0) || failed) { // test is over, stop streams and timer
-        if (failed || isNaN(ulStatus)) ulStatus = 'Fail'
-        clearRequests()
-        clearInterval(interval)
-		ulProgress = 1
-        tlog('ulTest finished '+ulStatus)
-        done()
-      }
-    }
-  }.bind(this), 200)
+  var testFunction=function(){
+	  var totLoaded = 0.0, // total number of transmitted bytes
+		startT = new Date().getTime(), // timestamp when test was started
+		graceTimeDone = false, //set to true after the grace time is past
+		failed = false // set to true if a stream fails
+	  xhr = []
+	  // function to create an upload stream. streams are slightly delayed so that they will not end at the same time
+	  var testStream = function (i, delay) {
+		setTimeout(function () {
+		  if (testStatus !== 3) return // delayed stream ended up starting after the end of the upload test
+		  tlog('ul test stream started '+i+' '+delay)
+		  var prevLoaded = 0 // number of bytes transmitted last time onprogress was called
+		  var x = new XMLHttpRequest()
+		  xhr[i] = x
+		  var ie11workaround
+		  if (settings.forceIE11Workaround) ie11workaround = true; else {
+			try {
+			  xhr[i].upload.onprogress
+			  ie11workaround = false
+			} catch (e) {
+			  ie11workaround = true
+			}
+		  }
+		  if (ie11workaround) {
+			// IE11 workarond: xhr.upload does not work properly, therefore we send a bunch of small 256k requests and use the onload event as progress. This is not precise, especially on fast connections
+			xhr[i].onload = function () {
+			tlog('ul stream progress event (ie11wa)')
+			  totLoaded += reqsmall.size;
+			  testStream(i, 0)
+			}
+			xhr[i].onerror = function () {
+			  // error, abort
+			  tlog('ul stream failed (ie11wa)')
+			  if (settings.xhr_ignoreErrors === 0) failed = true //abort
+			  try { xhr[i].abort() } catch (e) { }
+			  delete (xhr[i])
+			  if (settings.xhr_ignoreErrors === 1) testStream(i,0); //restart stream
+			}
+			xhr[i].open('POST', settings.url_ul + url_sep(settings.url_ul) + 'r=' + Math.random(), true) // random string to prevent caching
+			xhr[i].setRequestHeader('Content-Encoding', 'identity') // disable compression (some browsers may refuse it, but data is incompressible anyway)
+			xhr[i].send(reqsmall)
+		  } else {
+			// REGULAR version, no workaround
+			xhr[i].upload.onprogress = function (event) {
+			  tlog('ul stream progress event '+i+' '+event.loaded)
+			  if (testStatus !== 3) { try { x.abort() } catch (e) { } } // just in case this XHR is still running after the upload test
+			  // progress event, add number of new loaded bytes to totLoaded
+			  var loadDiff = event.loaded <= 0 ? 0 : (event.loaded - prevLoaded)
+			  if (isNaN(loadDiff) || !isFinite(loadDiff) || loadDiff < 0) return // just in case
+			  totLoaded += loadDiff
+			  prevLoaded = event.loaded
+			}.bind(this)
+			xhr[i].upload.onload = function () {
+			  // this stream sent all the garbage data, start again
+			  tlog('ul stream finished '+i)
+			  testStream(i, 0)
+			}.bind(this)
+			xhr[i].upload.onerror = function () {
+			  tlog('ul stream failed '+i)
+			  if (settings.xhr_ignoreErrors === 0) failed=true //abort
+			  try { xhr[i].abort() } catch (e) { }
+			  delete (xhr[i])
+			  if (settings.xhr_ignoreErrors === 1) testStream(i, 0) //restart stream
+			}.bind(this)
+			// send xhr
+			xhr[i].open('POST', settings.url_ul + url_sep(settings.url_ul) + 'r=' + Math.random(), true) // random string to prevent caching
+			xhr[i].setRequestHeader('Content-Encoding', 'identity') // disable compression (some browsers may refuse it, but data is incompressible anyway)
+			xhr[i].send(req)
+		  }
+		}.bind(this), 1)
+	  }.bind(this)
+	  // open streams
+	  for (var i = 0; i < settings.xhr_ulMultistream; i++) {
+		testStream(i, settings.xhr_multistreamDelay * i)
+	  }
+	  // every 200ms, update ulStatus
+	  interval = setInterval(function () {
+		tlog('UL: '+ulStatus+(graceTimeDone?'':' (in grace time)'))
+		var t = new Date().getTime() - startT
+		if (graceTimeDone) ulProgress = t / (settings.time_ul * 1000)
+		if (t < 200) return
+		if (!graceTimeDone){
+		  if (t > 1000 * settings.time_ulGraceTime){
+			if (totLoaded > 0){ // if the connection is so slow that we didn't get a single chunk yet, do not reset
+			  startT = new Date().getTime()
+			  totLoaded = 0.0;
+			}
+			graceTimeDone = true;
+		  }
+		}else{
+		  var speed = totLoaded / (t / 1000.0)
+		  ulStatus = ((speed * 8 * settings.overheadCompensationFactor)/(settings.useMebibits?1048576:1000000)).toFixed(2) // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
+		  if (((t / 1000.0) > settings.time_ul && ulStatus > 0) || failed) { // test is over, stop streams and timer
+			if (failed || isNaN(ulStatus)) ulStatus = 'Fail'
+			clearRequests()
+			clearInterval(interval)
+			ulProgress = 1
+			tlog('ulTest finished '+ulStatus)
+			done()
+		  }
+		}
+	  }.bind(this), 200)
+  }.bind(this);
+  if(settings.xhr_ul_sendPostRequestBeforeStartingTest){
+	  tlog('Sending POST request before performing upload test');
+	  xhr=[];
+	  xhr[0]=new XMLHttpRequest();
+	  xhr[0].onload=xhr[0].onerror=function(){
+		  tlog('POST request sent, starting upload test');
+		  testFunction();
+	  }.bind(this);
+	  xhr[0].open('POST',settings.url_ul);
+	  xhr[0].send();
+  }else testFunction();
 }
 // ping+jitter test, function done is called when it's over
 var ptCalled = false // used to prevent multiple accidental calls to pingTest
