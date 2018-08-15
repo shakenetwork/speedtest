@@ -1,25 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript" src="server_selector.js"></script>
+<script type="text/javascript" src="server_selector.min.js"></script>
 <script type="text/javascript">
 function I(i){return document.getElementById(i);}
 
 //LIST OF TEST SERVERS. See documentation for details if needed
 var SPEEDTEST_SERVERS=[
 	{	//this is my demo server, remove it
-		name:"Speedtest Demo Server (fdossena.com)", //user friendly name for the server
-		server:"https://speedtest.fdossena.com/testing/", //Full URL to the server, complete with / at the end
+		name:"Speedtest Demo Server 1 (HTTP)", //user friendly name for the server
+		server:"http://mpotdemo.fdossena.com/", //Full URL to the server, complete with / at the end
 		dlURL:"garbage.php",  //path to download test on this server (garbage.php or replacement)
 		ulURL:"empty.php",  //path to upload test on this server (empty.php or replacement)
 		pingURL:"empty.php",  //path to ping/jitter test on this server (empty.php or replacement)
 		getIpURL:"getIP.php"  //path to getIP on this server (getIP.php or replacement)
 	},
-	{
-		name:"Localhost",
-		server:"http://127.0.0.1/",
-		dlURL:"garbage.php",  
-		ulURL:"empty.php",  
+	{	//this is my demo server, remove it
+		name:"Speedtest Demo Server 2 (HTTP)",
+		server:"http://mpotdemo.adolfintel.com/",
+		dlURL:"garbage.php",
+		ulURL:"empty.php",
+		pingURL:"empty.php",
+		getIpURL:"getIP.php"
+	},
+	{	//this is my demo server, remove it
+		name:"Speedtest Demo Server 1 (HTTPS)",
+		server:"https://mpotdemo.fdossena.com/",
+		dlURL:"garbage.php",
+		ulURL:"empty.php",
+		pingURL:"empty.php",
+		getIpURL:"getIP.php"
+	},
+	{	//this is my demo server, remove it
+		name:"Speedtest Demo Server 2 (HTTPS)",
+		server:"https://mpotdemo.adolfintel.com/",
+		dlURL:"garbage.php",
+		ulURL:"empty.php",
 		pingURL:"empty.php",
 		getIpURL:"getIP.php"
 	}
@@ -104,7 +120,7 @@ function startStop(){
 		initUI();
 	}else{
 		//test is not running, begin
-		w=new Worker('speedtest_worker.js');
+		w=new Worker('speedtest_worker.min.js');
 		w.postMessage('start '+JSON.stringify(speedtestSettings)); //Add optional parameters as a JSON object to this command
 		I("startStopBtn").className="running";
 		w.onmessage=function(e){
@@ -178,7 +194,7 @@ function initUI(){
 		color:#404040;
 		text-align:center;
 	}
-	div.loadCircle{
+	span.loadCircle{
 		display:inline-block;
 		width:2em;
 		height:2em;
@@ -311,7 +327,7 @@ function initUI(){
 <body onload="initServers()">
 <h1>HTML5 Speedtest</h1>
 <div id="loading" class="visible">
-	<p id="message"><div class="loadCircle"></div>Selecting a server...</p>
+	<p id="message"><span class="loadCircle"></span>Selecting a server...</p>
 </div>
 <div id="testWrapper" class="hidden">
 	<div id="startStopBtn" onclick="startStop()"></div>
