@@ -41,16 +41,18 @@ var PINGS=3, //up to 3 pings are performed, unless the server is down...
 function checkServer(server,done){
 	var i=0;
 	server.pingT=-1;
-	var nextPing=function(){
-		if(i++==PINGS){done(); return;}
-		ping(server.server+server.pingURL,function(t){
-			if(t>=0){
-				if(t<server.pingT||server.pingT==-1) server.pingT=t;
-				if(t<SLOW_THRESHOLD) nextPing(); else done();
-			}else done();
-		}.bind(this));
-	}.bind(this);
-	nextPing();
+	if(server.server.indexOf(location.protocol)==-1) done(); else{
+		var nextPing=function(){
+			if(i++==PINGS){done(); return;}
+			ping(server.server+server.pingURL,function(t){
+				if(t>=0){
+					if(t<server.pingT||server.pingT==-1) server.pingT=t;
+					if(t<SLOW_THRESHOLD) nextPing(); else done();
+				}else done();
+			}.bind(this));
+		}.bind(this);
+		nextPing();
+	}
 }
 
 /*this function goes through a list of servers, each with this format:
