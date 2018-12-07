@@ -277,7 +277,7 @@ function dlTest (done) {
       var speed = totLoaded / (t / 1000.0)
 	  if(settings.time_auto){
 		  //decide how much to shorten the test. Every 200ms, the test is shortened by the bonusT calculated here
-		  var bonus=6.4*speed/1000000
+		  var bonus=8*speed/1000000
 		  bonusT+=bonus>800?800:bonus
 	  }
 	  //update status
@@ -405,7 +405,7 @@ function ulTest (done) {
       var speed = totLoaded / (t / 1000.0)
 	  if(settings.time_auto){
 		  //decide how much to shorten the test. Every 200ms, the test is shortened by the bonusT calculated here
-		  var bonus=6.4*speed/1000000
+		  var bonus=8*speed/1000000
 		  bonusT+=bonus>800?800:bonus
 	  }
 	  //update status
