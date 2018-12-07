@@ -158,7 +158,7 @@ this.addEventListener('message', function (e) {
     runNextTest()
   }
   if (params[0] === 'abort') { // abort command
-    tverb('manually aborted')
+    tlog('manually aborted')
     clearRequests() // stop all xhr activity
     runNextTest=null;
     if (interval) clearInterval(interval) // clear timer if present
