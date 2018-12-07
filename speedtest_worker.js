@@ -200,7 +200,7 @@ function getIp (done) {
     done()
   }
   xhr.onerror = function () {
-	tverb('getIp failed, took '+(new Date().getTime()-startT)+'ms')
+	tlog('getIp failed, took '+(new Date().getTime()-startT)+'ms')
     done()
   }
   xhr.open('GET', settings.url_getIp + url_sep(settings.url_getIp) + (settings.getIp_ispInfo?("isp=true"+(settings.getIp_ispInfo_distance?("&distance="+settings.getIp_ispInfo_distance+"&"):"&")):"&") + 'r=' + Math.random(), true)
