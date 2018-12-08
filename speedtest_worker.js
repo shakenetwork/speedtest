@@ -287,7 +287,7 @@ function dlTest (done) {
         clearRequests()
         clearInterval(interval)
 		dlProgress = 1
-        tlog('dlTest: '+dlStatus+', took '+(new Date().getTime() - startT - bonusT)+'ms')
+        tlog('dlTest: '+dlStatus+', took '+(new Date().getTime() - startT)+'ms')
         done()
       }
     }
@@ -415,7 +415,7 @@ function ulTest (done) {
         clearRequests()
         clearInterval(interval)
 		ulProgress = 1
-        tlog('ulTest: '+ulStatus+', took '+(new Date().getTime() - startT - bonusT)+'ms')
+        tlog('ulTest: '+ulStatus+', took '+(new Date().getTime() - startT)+'ms')
         done()
       }
     }
