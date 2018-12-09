@@ -1,7 +1,7 @@
 # HTML5 Speedtest
 
 > by Federico Dossena  
-> Version 4.6.2, September 21, 2018
+> Version 4.7
 > [https://github.com/adolfintel/speedtest/](https://github.com/adolfintel/speedtest/)
 
 
@@ -173,12 +173,14 @@ w.postMessage('start '+JSON.stringify(params))
 ```
 
 #### Test parameters
-* __time_dl__: How long the download test should be in seconds. The test will continue regardless of this limit if the speed is still 0.00 when the limit is reached.
+* __time_dl_max__: Maximum duration of the download test in seconds. If auto duration is disabled, this is used as the duration of the test.
     * Default: `15`
     * Recommended: `>=5`
-* __time_ul__: How long the upload test should be in seconds. The test will continue regardless of this limit if the speed is still 0.00 when the limit is reached.
+* __time_ul_max__: Maximum duration of the upload test in seconds. If auto duration is disabled, this is used as the duration of the test.
     * Default: `15`
     * Recommended: `>=10`
+* __time_auto__: Automatically determine the duration of the download and upload tests, making them faster on faster connections, to avoid wasting data.
+    * Default: `true`
 * __count_ping__: How many pings to perform in the ping test
     * Default: `10`
     * Recommended: `>=3, <30`
@@ -266,7 +268,8 @@ w.postMessage('start '+JSON.stringify(params))
 * __telemetry_level__: The type of telemetry to use. See the telemetry section for more info about this
 	* Default: `none`
 	* `basic`: send results only
-	* `full`: send results and debug info
+	* `full`: send results and timing information, even for aborted tests
+	* `debug`: same as full but also sends debug information. Not recommended.
 * __telemetry_extra__: Extra data that you want to be passed to the telemetry. This is a string field, if you want to pass an object, make sure you use ``JSON.stringify``. This string will be added to the database entry for this test.
 	
 ### Aborting the test prematurely
@@ -359,7 +362,8 @@ Edit your test page; where you start the worker, you need to specify the `teleme
 There are 3 levels:
 * `none`: telemetry is disabled (default)
 * `basic`: telemetry collects IP, ISP info, User Agent, Preferred language, Test results
-* `full`: same as above, but also collects a debug log (10-150 Kb each, not recommended unless you're developing the speedtest)
+* `full`: in addition to the basic telemetry, timing information is also collected so you know how long each part of the test took
+* `debug`: same as full, but also collects a debug log (10-150 Kb each, not recommended unless you're developing the speedtest)
 
 Example:
 ```js
