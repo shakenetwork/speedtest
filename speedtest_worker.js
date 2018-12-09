@@ -262,7 +262,7 @@ function dlTest (done) {
   interval = setInterval(function () {
     tverb('DL: '+dlStatus+(graceTimeDone?'':' (in grace time)'))
     var t = new Date().getTime() - startT
-	if (graceTimeDone) dlProgress = t / (settings.time_dl_max * 1000)
+	if (graceTimeDone) dlProgress = (t + bonusT) / (settings.time_dl_max * 1000)
     if (t < 200) return
     if (!graceTimeDone){
       if (t > 1000 * settings.time_dlGraceTime){
@@ -390,7 +390,7 @@ function ulTest (done) {
   interval = setInterval(function () {
 	tverb('UL: '+ulStatus+(graceTimeDone?'':' (in grace time)'))
     var t = new Date().getTime() - startT
-	if (graceTimeDone) ulProgress = t / (settings.time_ul_max * 1000)
+	if (graceTimeDone) ulProgress = (t + bonusT) / (settings.time_ul_max * 1000)
     if (t < 200) return
     if (!graceTimeDone){
       if (t > 1000 * settings.time_ulGraceTime){
