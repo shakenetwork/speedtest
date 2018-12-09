@@ -261,7 +261,7 @@ function dlTest (done) {
   // every 200ms, update dlStatus
   interval = setInterval(function () {
     tverb('DL: '+dlStatus+(graceTimeDone?'':' (in grace time)'))
-    var t = new Date().getTime() - startT + bonusT
+    var t = new Date().getTime() - startT
 	if (graceTimeDone) dlProgress = t / (settings.time_dl_max * 1000)
     if (t < 200) return
     if (!graceTimeDone){
@@ -282,7 +282,7 @@ function dlTest (done) {
 	  }
 	  //update status
       dlStatus = ((speed * 8 * settings.overheadCompensationFactor)/(settings.useMebibits?1048576:1000000)).toFixed(2) // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
-      if (((t / 1000.0) > settings.time_dl_max) || failed) { // test is over, stop streams and timer
+      if ((((t+ bonusT) / 1000.0) > settings.time_dl_max) || failed) { // test is over, stop streams and timer
         if (failed || isNaN(dlStatus)) dlStatus = 'Fail'
         clearRequests()
         clearInterval(interval)
@@ -389,7 +389,7 @@ function ulTest (done) {
   // every 200ms, update ulStatus
   interval = setInterval(function () {
 	tverb('UL: '+ulStatus+(graceTimeDone?'':' (in grace time)'))
-    var t = new Date().getTime() - startT + bonusT
+    var t = new Date().getTime() - startT
 	if (graceTimeDone) ulProgress = t / (settings.time_ul_max * 1000)
     if (t < 200) return
     if (!graceTimeDone){
@@ -410,7 +410,7 @@ function ulTest (done) {
 	  }
 	  //update status
       ulStatus = ((speed * 8 * settings.overheadCompensationFactor)/(settings.useMebibits?1048576:1000000)).toFixed(2) // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
-      if (((t / 1000.0) > settings.time_ul_max) || failed) { // test is over, stop streams and timer
+      if ((((t + bonusT) / 1000.0) > settings.time_ul_max) || failed) { // test is over, stop streams and timer
         if (failed || isNaN(ulStatus)) ulStatus = 'Fail'
         clearRequests()
         clearInterval(interval)
