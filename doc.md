@@ -1,7 +1,7 @@
 # HTML5 Speedtest - Multiple Points of Test
 
 > by Federico Dossena  
-> Version 4.6.1 MPOT, August 16, 2018
+> Version 4.7 MPOT
 > [https://github.com/adolfintel/speedtest/tree/mpot](https://github.com/adolfintel/speedtest/tree/mpot)
 
 ## Introduction
