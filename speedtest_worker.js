@@ -293,8 +293,8 @@ function dlTest (done) {
     }
   }.bind(this), 200)
 }
-// upload test, calls done function whent it's over
 
+// upload test, calls done function whent it's over
 var ulCalled = false // used to prevent multiple accidental calls to ulTest
 function ulTest (done) {
   tverb('ulTest')
