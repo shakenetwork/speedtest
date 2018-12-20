@@ -1,12 +1,16 @@
 /*
-	HTML5 Speedtest v4.6.1 MPOT - Server selector
+	HTML5 Speedtest v4.7 MPOT - Server selector
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License
 */
 
 //pings the specified URL, then calls the function result. Result will receive a parameter which is either the time it took to ping the URL, or -1 if something went wrong.
-//var PING_TIMEOUT=500; //disabled because it breaks IE11
+var PING_TIMEOUT=1000;
+var USE_PING_TIMEOUT=true; //will be disabled on unsupported browsers
+if(/MSIE.(\d+\.\d+)/i.test(navigator.userAgent)){ //IE11 doesn't support XHR timeout
+	USE_PING_TIMEOUT=false;
+}
 function ping(url,result){
 	var xhr=new XMLHttpRequest();
 	var t=new Date().getTime();
@@ -29,9 +33,12 @@ function ping(url,result){
 		result(-1);
 	}.bind(this);
 	xhr.open("GET",url);
-	/*try{ //disabled because it breaks IE11
-		xhr.timeout=PING_TIMEOUT;
-	}catch(e){}*/
+	if(USE_PING_TIMEOUT){
+		try{
+			xhr.timeout=PING_TIMEOUT;
+			xhr.ontimeout=xhr.onerror;
+		}catch(e){}
+	}
 	xhr.send();
 }
 
