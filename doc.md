@@ -418,6 +418,30 @@ If the image is blank, this usually happens because PHP can't find the font file
 This is not a speedtest related issue, as it can be replicated in virtually any HTTP file upload/download.  
 Go to your domain's DNS settings and change "DNS and HTTP proxy (CDN)" to "DNS only", and wait for the settings to be applied (can take a few minutes).
 
+#### On Windows Server, using IIS, the upload test doesn't work, CORS errors are visible in the console
+This is a configuration issue. Make a file called web.config in wwwroot and adapt the following code:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <system.webServer>
+    <cors enabled="true" failUnlistedOrigins="false"> 
+      <add origin="*"> 
+        <allowHeaders allowAllRequestedHeaders="true" />
+        <allowMethods> 
+          <add method="GET" /> 
+          <add method="POST" /> 
+          <add method="PUT" /> 
+          <add method="DELETE" /> 
+          <add method="OPTIONS" /> 
+        </allowMethods> 
+        <exposeHeaders>
+        </exposeHeaders> 
+      </add>
+    </cors> 
+  </system.webServer> 
+</configuration>
+```
+
 ## Known bugs and limitations
 ### General
 * The ping/jitter test is measured by seeing how long it takes for an empty XHR to complete. It is not an acutal ICMP ping. Different browsers may also show different results, especially on very fast connections on slow devices.
