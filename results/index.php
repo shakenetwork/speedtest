@@ -90,7 +90,7 @@ if($db_type=="mysql"){
 }else die();
 
 $ispinfo=json_decode($ispinfo,true)["processedString"];
-$dash=strrpos($ispinfo,"-");
+$dash=strpos($ispinfo,"-");
 if(!($dash===FALSE)){
 	$ispinfo=substr($ispinfo,$dash+2);
 	$par=strrpos($ispinfo,"(");
