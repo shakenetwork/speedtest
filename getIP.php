@@ -53,22 +53,27 @@ if (isset($_GET["isp"])) {
         $json = file_get_contents("https://ipinfo.io/" . $ip . "/json");
         $details = json_decode($json, true);
 		$rawIspInfo=$details;
-        if (array_key_exists("org", $details))
+        if (array_key_exists("org", $details)){
             $isp .= $details["org"];
-        else
+			$isp=preg_replace("/AS\d{1,}\s/","",$isp); //Remove AS##### from ISP name, if present
+		}else{
             $isp .= "Unknown ISP";
-        if (array_key_exists("country", $details))
-            $isp .= ", " . $details["country"];
+		}
+		if (array_key_exists("country", $details)){
+			$isp .= ", " . $details["country"];
+		}
         $clientLoc = NULL;
         $serverLoc = NULL;
-        if (array_key_exists("loc", $details))
+        if (array_key_exists("loc", $details)){
             $clientLoc = $details["loc"];
+		}
         if (isset($_GET["distance"])) {
             if ($clientLoc) {
                 $json = file_get_contents("https://ipinfo.io/json");
                 $details = json_decode($json, true);
-                if (array_key_exists("loc", $details))
+                if (array_key_exists("loc", $details)){
                     $serverLoc = $details["loc"];
+				}
                 if ($serverLoc) {
                     try {
                         $clientLoc = explode(",", $clientLoc);
