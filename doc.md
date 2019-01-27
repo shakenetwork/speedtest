@@ -11,7 +11,7 @@ This test measures download speed, upload speed, ping and jitter.
 
 First of all, the requirements to run this test:
 
-* The browser have to support XHR Level 2 and Web Workers and Javascript must be enabled.
+* The browser must support XHR Level 2 and Web Workers and Javascript must be enabled.
     * Internet Explorer 11
     * Microsoft Edge 12+
     * Mozilla Firefox 12+
