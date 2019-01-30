@@ -173,7 +173,7 @@ this.addEventListener("message", function(e) {
 				if (settings.telemetry_level > 0)
 					sendTelemetry(function(id) {
 						testStatus = 4;
-						if (id != -1) testId = id;
+						if (id != null) testId = id;
 					});
 				else testStatus = 4;
 				return;
@@ -662,15 +662,14 @@ function sendTelemetry(done) {
 			var parts = xhr.responseText.split(" ");
 			if (parts[0] == "id") {
 				try {
-					var id = Number(parts[1]);
-					if (!isNaN(id)) done(id);
-					else done(-1);
+					var id = parts[1];
+					done(id);
 				} catch (e) {
-					done(-1);
+					done(null);
 				}
-			} else done(-1);
+			} else done(null);
 		} catch (e) {
-			done(-1);
+			done(null);
 		}
 	};
 	xhr.onerror = function() {
