@@ -54,6 +54,7 @@ header('Content-Type: text/html; charset=utf-8');
 <h1>HTML5 Speedtest - Stats</h1>
 <?php
 include_once("telemetry_settings.php");
+require "idObfuscation.php";
 if($stats_password=="PASSWORD"){
 	?>
 		Please set $stats_password in telemetry_settings.php to enable access.
@@ -87,9 +88,10 @@ if($stats_password=="PASSWORD"){
 		$q=null;
 		if($_GET["op"]=="id"&&!empty($_POST["id"])){
 			$id=$_POST["id"];
+			if($enable_id_obfuscation) $id=deobfuscateId($id);
 			if($db_type=="mysql"){
 				$q=$conn->prepare("select id,timestamp,ip,ispinfo,ua,lang,dl,ul,ping,jitter,log,extra from speedtest_users where id=?");
-				$q->bind_param("i",$_POST["id"]);
+				$q->bind_param("i",$id);
 				$q->execute();
 				$q->store_result();
 				$q->bind_result($id,$timestamp,$ip,$ispinfo,$ua,$lang,$dl,$ul,$ping,$jitter,$log,$extra);
@@ -129,7 +131,7 @@ if($stats_password=="PASSWORD"){
 			}else die();
 	?>
 		<table>
-			<tr><th>Test ID</th><td><?=htmlspecialchars($id, ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Test ID</th><td><?=htmlspecialchars(($enable_id_obfuscation?obfuscateId($id):$id), ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>Date and time</th><td><?=htmlspecialchars($timestamp, ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>IP and ISP Info</th><td><?=$ip ?><br/><?=htmlspecialchars($ispinfo, ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>User agent and locale</th><td><?=$ua ?><br/><?=htmlspecialchars($lang, ENT_HTML5, 'UTF-8') ?></td></tr>
