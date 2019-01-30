@@ -15,7 +15,7 @@ var clientIp = ""; // client's IP address as reported by getIP.php
 var dlProgress = 0; //progress of download test 0-1
 var ulProgress = 0; //progress of upload test 0-1
 var pingProgress = 0; //progress of ping+jitter test 0-1
-var testId = "noID"; //test ID (sent back by telemetry if used, the string 'noID' otherwise)
+var testId = null; //test ID (sent back by telemetry if used, null otherwise)
 
 var log = ""; //telemetry log
 function tlog(s) {
