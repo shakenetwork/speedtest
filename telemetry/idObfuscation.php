@@ -14,6 +14,10 @@ function getObfuscationSalt(){
 	}
 	return isset($OBFUSCATION_SALT)?$OBFUSCATION_SALT:0;
 }
+/*
+This is a simple reversible hash function I made for encoding and decoding test IDs.
+It is not cryptographically secure, don't use it to hash passwords or something!
+*/
 function obfdeobf($id){
 	$salt=getObfuscationSalt()&0xFFFFFFFF;
 	$id=$id&0xFFFFFFFF;
