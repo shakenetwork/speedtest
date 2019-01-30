@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 header('Content-Type: text/html; charset=utf-8');
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 ?>
 <!DOCTYPE html>
 <html>
@@ -62,7 +65,7 @@ if($stats_password=="PASSWORD"){
 }else if($_SESSION["logged"]===true){
 	if($_GET["op"]=="logout"){
 		$_SESSION["logged"]=false;
-		?><script type="text/javascript">window.location.search=""</script><?php
+		?><script type="text/javascript">window.location=location.protocol+"//"+location.host+location.pathname;</script><?php
 	}else{
 		$conn=null;
 		if($db_type=="mysql"){
@@ -77,17 +80,18 @@ if($stats_password=="PASSWORD"){
 			$conn = new PDO("pgsql:$conn_host;$conn_db;$conn_user;$conn_password");
 		}else die();
 ?>
-	<form action="stats.php?op=logout" method="POST"><input type="submit" value="Logout" /></form>
-	<form action="stats.php?op=id" method="POST">
+	<form action="stats.php" method="GET"><input type="hidden" name="op" value="logout" /><input type="submit" value="Logout" /></form>
+	<form action="stats.php" method="GET">
 		<h3>Search test results</h6>
+		<input type="hidden" name="op" value="id" />
 		<input type="text" name="id" id="id" placeholder="Test ID" value=""/>
 		<input type="submit" value="Find" />
 		<input type="submit" onclick="document.getElementById('id').value=''" value="Show last 100 tests" />
 	</form>
 	<?php
 		$q=null;
-		if($_GET["op"]=="id"&&!empty($_POST["id"])){
-			$id=$_POST["id"];
+		if($_GET["op"]=="id"&&!empty($_GET["id"])){
+			$id=$_GET["id"];
 			if($enable_id_obfuscation) $id=deobfuscateId($id);
 			if($db_type=="mysql"){
 				$q=$conn->prepare("select id,timestamp,ip,ispinfo,ua,lang,dl,ul,ping,jitter,log,extra from speedtest_users where id=?");
@@ -150,7 +154,7 @@ if($stats_password=="PASSWORD"){
 }else{
 	if($_GET["op"]=="login"&&$_POST["password"]===$stats_password){
 		$_SESSION["logged"]=true;
-		?><script type="text/javascript">window.location.search=""</script><?php
+		?><script type="text/javascript">window.location=location.protocol+"//"+location.host+location.pathname;</script><?php
 	}else{
 ?>
 	<form action="stats.php?op=login" method="POST">
