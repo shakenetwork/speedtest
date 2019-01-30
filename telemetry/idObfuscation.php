@@ -1,15 +1,16 @@
 <?php
 function getObfuscationSalt(){
-	if(file_exists("idObfuscation_salt.php")){
-		require "idObfuscation_salt.php";
+	$saltFile=dirname(__FILE__)."/idObfuscation_salt.php";
+	if(file_exists($saltFile)){
+		require $saltFile;
 	}else{
 		$bytes=openssl_random_pseudo_bytes(4);
-		$sf=fopen("idObfuscation_salt.php","w");
+		$sf=fopen($saltFile,"w");
 		fwrite($sf,chr(60)."?php\n");
 		fwrite($sf,'$OBFUSCATION_SALT=0x'.bin2hex($bytes).";\n");
 		fwrite($sf,"?".chr(62));
 		fclose($sf);
-		require "idObfuscation_salt.php";
+		require $saltFile;
 	}
 	return isset($OBFUSCATION_SALT)?$OBFUSCATION_SALT:0;
 }
