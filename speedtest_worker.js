@@ -1,5 +1,5 @@
 /*
-	HTML5 Speedtest v4.7
+	HTML5 Speedtest v4.7.1
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License
@@ -15,7 +15,7 @@ var clientIp = ""; // client's IP address as reported by getIP.php
 var dlProgress = 0; //progress of download test 0-1
 var ulProgress = 0; //progress of upload test 0-1
 var pingProgress = 0; //progress of ping+jitter test 0-1
-var testId = "noID"; //test ID (sent back by telemetry if used, the string 'noID' otherwise)
+var testId = null; //test ID (sent back by telemetry if used, null otherwise)
 
 var log = ""; //telemetry log
 function tlog(s) {
@@ -173,7 +173,7 @@ this.addEventListener("message", function(e) {
 				if (settings.telemetry_level > 0)
 					sendTelemetry(function(id) {
 						testStatus = 4;
-						if (id != -1) testId = id;
+						if (id != null) testId = id;
 					});
 				else testStatus = 4;
 				return;
@@ -460,20 +460,10 @@ function ulTest(done) {
 				}
 				if (ie11workaround) {
 					// IE11 workarond: xhr.upload does not work properly, therefore we send a bunch of small 256k requests and use the onload event as progress. This is not precise, especially on fast connections
-					xhr[i].onload = function() {
+					xhr[i].onload = xhr[i].onerror = function() {
 						tverb("ul stream progress event (ie11wa)");
 						totLoaded += reqsmall.size;
 						testStream(i, 0);
-					};
-					xhr[i].onerror = function() {
-						// error, abort
-						tverb("ul stream failed (ie11wa)");
-						if (settings.xhr_ignoreErrors === 0) failed = true; //abort
-						try {
-							xhr[i].abort();
-						} catch (e) {}
-						delete xhr[i];
-						if (settings.xhr_ignoreErrors === 1) testStream(i, 0); //restart stream
 					};
 					xhr[i].open("POST", settings.url_ul + url_sep(settings.url_ul) + "r=" + Math.random(), true); // random string to prevent caching
 					xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
@@ -662,15 +652,14 @@ function sendTelemetry(done) {
 			var parts = xhr.responseText.split(" ");
 			if (parts[0] == "id") {
 				try {
-					var id = Number(parts[1]);
-					if (!isNaN(id)) done(id);
-					else done(-1);
+					var id = parts[1];
+					done(id);
 				} catch (e) {
-					done(-1);
+					done(null);
 				}
-			} else done(-1);
+			} else done(null);
 		} catch (e) {
-			done(-1);
+			done(null);
 		}
 	};
 	xhr.onerror = function() {

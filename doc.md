@@ -1,7 +1,7 @@
 # HTML5 Speedtest
 
 > by Federico Dossena  
-> Version 4.7
+> Version 4.7.1
 > [https://github.com/adolfintel/speedtest/](https://github.com/adolfintel/speedtest/)
 
 
@@ -148,7 +148,7 @@ The response from the worker is a JSON string containing these entries:
 * __dlProgress__: the progress of the download test as a number between 0 and 1
 * __ulProgress__: the progress of the upload test as a number between 0 and 1
 * __pingProgress__: the progress of the ping+jitter test as a number between 0 and 1
-* __testId__: when telemetry is active, this is the ID of the test as an integer. This string is 'noID' until the test is finished (testState 4). This ID is used for results sharing
+* __testId__: when telemetry is active, this is the ID of the test in the database. This string is null until the test is finished (testState 4), or if telemetry encounters an error. This ID is used for results sharing
 
 ### Starting the test
 To start the test with the default settings, which is usually the best choice, send the start command to the worker:
@@ -380,6 +380,15 @@ To use this feature, copy the `results` folder. You can customize the style of t
 This feature requires Telemetry to be enabled, and FreeType2 must be installed in PHP (if not already be installed by your distro).
 
 __Important:__ This feature relies on PHP functions `imagefttext` and `imageftbbox` that are well known for being problematic. The most common problem is that they can't find the font files and therefore nothing is drawn. This problem is metioned [here](http://php.net/manual/en/function.imagefttext.php) and was experienced by a lot of users.
+
+#### Obfuscated Test IDs
+By default, the telemetry generates a progressive ID for each test. Even if no sensitive information is leaked, you might not want users to be able to guess other test IDs. To avoid this, you can turn on ID obfuscation, which turns IDs into a reversible hash, much like YouTube video IDs.
+
+To enable this feature, edit `telemetry_settings.php` and set `enable_id_obfuscation` to true.
+
+From now on, all test IDs will be obfuscated using a unique salt. The IDs in the database are still progressive, but users will only know their obfuscated versions and won't be able to easily guess other IDs.
+
+__Important:__ Make sure PHP is allowed to write to the `telemetry` folder. The salt will be stored in a file called `idObfuscation_salt.php`. This file is like a private key, don't lose it or you won't be able to deobfuscate IDs anymore!
 
 ### Seeing the results
 A basic front-end for visualizing and searching tests by ID is available in `telemetry/stats.php`.
