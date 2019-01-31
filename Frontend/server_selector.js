@@ -1,5 +1,5 @@
 /*
-	HTML5 Speedtest v4.7 MPOT - Server selector
+	HTML5 Speedtest v4.7.1 MPOT - Server selector
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License
