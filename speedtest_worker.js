@@ -460,20 +460,10 @@ function ulTest(done) {
 				}
 				if (ie11workaround) {
 					// IE11 workarond: xhr.upload does not work properly, therefore we send a bunch of small 256k requests and use the onload event as progress. This is not precise, especially on fast connections
-					xhr[i].onload = function() {
+					xhr[i].onload = xhr[i].onerror = function() {
 						tverb("ul stream progress event (ie11wa)");
 						totLoaded += reqsmall.size;
 						testStream(i, 0);
-					};
-					xhr[i].onerror = function() {
-						// error, abort
-						tverb("ul stream failed (ie11wa)");
-						if (settings.xhr_ignoreErrors === 0) failed = true; //abort
-						try {
-							xhr[i].abort();
-						} catch (e) {}
-						delete xhr[i];
-						if (settings.xhr_ignoreErrors === 1) testStream(i, 0); //restart stream
 					};
 					xhr[i].open("POST", settings.url_ul + url_sep(settings.url_ul) + "r=" + Math.random(), true); // random string to prevent caching
 					xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
