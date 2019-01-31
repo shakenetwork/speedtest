@@ -664,7 +664,7 @@ function sendTelemetry(done) {
 	};
 	xhr.onerror = function() {
 		console.log("TELEMETRY ERROR " + xhr.status);
-		done(-1);
+		done(null);
 	};
 	xhr.open("POST", settings.url_telemetry + url_sep(settings.url_telemetry) + "r=" + Math.random(), true);
 	var telemetryIspInfo = {
