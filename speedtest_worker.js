@@ -147,6 +147,10 @@ this.addEventListener("message", function(e) {
 				//Edge 15 introduced a bug that causes onprogress events to not get fired, we have to use the "small chunks" workaround that reduces accuracy
 				settings.forceIE11Workaround = true;
 			}
+			if (/PlayStation 4.(\d+\.\d+)/i.test(ua)) {
+				//PS4 browser has the same bug as IE11/Edge
+				settings.forceIE11Workaround = true;
+			}
 			if (/Chrome.(\d+)/i.test(ua) && /Android|iPhone|iPad|iPod|Windows Phone/i.test(ua)) {
 				//cheap af
 				//Chrome mobile introduced a limitation somewhere around version 65, we have to limit XHR upload size to 4 megabytes
