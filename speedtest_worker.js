@@ -470,8 +470,12 @@ function ulTest(done) {
 						testStream(i, 0);
 					};
 					xhr[i].open("POST", settings.url_ul + url_sep(settings.url_ul) + "r=" + Math.random(), true); // random string to prevent caching
-					xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
-					xhr[i].setRequestHeader("Content-Type", "application/octet-stream");
+					try{
+						xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
+					}catch(e){}
+					try{
+						xhr[i].setRequestHeader("Content-Type", "application/octet-stream"); //force content-type to application/octet-stream in case the server misinterprets it
+					}catch(e){}
 					xhr[i].send(reqsmall);
 				} else {
 					// REGULAR version, no workaround
@@ -504,8 +508,12 @@ function ulTest(done) {
 					}.bind(this);
 					// send xhr
 					xhr[i].open("POST", settings.url_ul + url_sep(settings.url_ul) + "r=" + Math.random(), true); // random string to prevent caching
-					xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
-					xhr[i].setRequestHeader("Content-Type", "application/octet-stream");
+					try{
+						xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
+					}catch(e){}
+					try{
+						xhr[i].setRequestHeader("Content-Type", "application/octet-stream"); //force content-type to application/octet-stream in case the server misinterprets it
+					}catch(e){}
 					xhr[i].send(req);
 				}
 			}.bind(this),
