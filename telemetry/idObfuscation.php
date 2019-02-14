@@ -18,22 +18,25 @@ function getObfuscationSalt(){
 This is a simple reversible hash function I made for encoding and decoding test IDs.
 It is not cryptographically secure, don't use it to hash passwords or something!
 */
-function obfdeobf($id){
+function obfdeobf($id,$dec){
 	$salt=getObfuscationSalt()&0xFFFFFFFF;
 	$id=$id&0xFFFFFFFF;
-	for($i=0;$i<16;$i++){
+	if($dec){
 		$id=$id^$salt;
-		$salt=(($salt>>1)&0xFFFFFFFF)|(($salt&0x00000001)<<31);
-		$id=((0x0000FFFF&$id)<<16)|((0xFFFF0000&$id)>>16);
-		$id=(($id>>1)&0xFFFFFFFF)|(($id&0x00000001)<<31);
+		$id=(($id&0xAAAAAAAA)>>1)|($id&0x55555555)<<1;
+		$id=(($id&0x0000FFFF)<<16)|(($id&0xFFFF0000)>>16);
+		return $id;
+	}else{
+		$id=(($id&0x0000FFFF)<<16)|(($id&0xFFFF0000)>>16);
+		$id=(($id&0xAAAAAAAA)>>1)|($id&0x55555555)<<1;
+		return $id^$salt;
 	}
-	return $id;
 }
 function obfuscateId($id){
-	return str_pad(base_convert(obfdeobf($id+1),10,36),7,0,STR_PAD_LEFT);
+	return str_pad(base_convert(obfdeobf($id+1,false),10,36),7,0,STR_PAD_LEFT);
 }
 function deobfuscateId($id){
-	return obfdeobf(base_convert($id,36,10))-1;
+	return obfdeobf(base_convert($id,36,10),true)-1;
 }
 
 //IMPORTANT: DO NOT ADD ANYTHING BELOW THE PHP CLOSING TAG, NOT EVEN EMPTY LINES!
