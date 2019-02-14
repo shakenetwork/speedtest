@@ -451,6 +451,10 @@ This is a configuration issue. Make a file called web.config in wwwroot and adap
 </configuration>
 ```
 
+#### ID obfuscation doesn't work (incorrect output, blank results image)
+ID obfuscation only works on 64 bit PHP (requires PHP_INT_SIZE to be 8).  
+Note that older versions of PHP 5 on Windows use PHP_INT_SIZE of 4, even if they're 64 bit. If you're in this situation, update your PHP install.
+
 ## Known bugs and limitations
 ### General
 * The ping/jitter test is measured by seeing how long it takes for an empty XHR to complete. It is not an acutal ICMP ping. Different browsers may also show different results, especially on very fast connections on slow devices.
