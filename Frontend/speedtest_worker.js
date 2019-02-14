@@ -478,9 +478,7 @@ function ulTest(done) {
 						try{
 							xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
 						}catch(e){}
-						try{
-							xhr[i].setRequestHeader("Content-Type", "application/octet-stream"); //force content-type to application/octet-stream in case the server misinterprets it
-						}catch(e){}
+						//No Content-Type header in MPOT branch because it triggers bugs in some browsers
 						xhr[i].send(reqsmall);
 					} else {
 						// REGULAR version, no workaround
@@ -516,9 +514,7 @@ function ulTest(done) {
 						try{
 							xhr[i].setRequestHeader("Content-Encoding", "identity"); // disable compression (some browsers may refuse it, but data is incompressible anyway)
 						}catch(e){}
-						try{
-							xhr[i].setRequestHeader("Content-Type", "application/octet-stream"); //force content-type to application/octet-stream in case the server misinterprets it
-						}catch(e){}
+						//No Content-Type header in MPOT branch because it triggers bugs in some browsers
 						xhr[i].send(req);
 					}
 				}.bind(this),
