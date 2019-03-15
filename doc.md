@@ -41,6 +41,8 @@ Later we'll see how to use the test without PHP, and how to configure the teleme
 
 __Important:__ keep all the files together; all paths are relative to the js file
 
+__Important:__ Make sure PHP is allowed to write to the directory where you're installing the speedtest because getIP.php needs to create a cache file to improve performance.
+
 ## Basic usage
 You can start using this speedtest on your site without any special knowledge.  
 Start by copying one of the included examples. Here's a description for each of them:
