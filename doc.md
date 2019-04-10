@@ -223,11 +223,11 @@ w.postMessage('start '+JSON.stringify(params))
 * __enable_quirks__: enables browser-specific optimizations. These optimizations override some of the default settings. They do not override settings that are explicitly set.
     * Default: `true`
 * __garbagePhp_chunkSize__: size of chunks sent by garbage.php in megabytes
-    * Default: `20`
+    * Default: `100`
     * Recommended: `>=10`
-    * Maximum: `100`
+    * Maximum: `1024`
 * __xhr_dlMultistream__: how many streams should be opened for the download test
-    * Default: `10`
+    * Default: `6`
     * Recommended: `>=3`
     * Default override: 3 on Edge if enable_quirks is true
     * Default override: 5 on Chromium-based if enable_quirks is true
