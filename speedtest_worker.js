@@ -129,6 +129,10 @@ this.addEventListener("message", function(e) {
 						// ff more precise with 1 upload stream
 						settings.xhr_ulMultistream = 1;
 					}
+					if (typeof s.xhr_ulMultistream === "undefined") {
+						// ff performance API sucks
+						settings.ping_allowPerformanceApi = false;
+					}
 				}
 				if (/Edge.(\d+\.\d+)/i.test(ua)) {
 					if (typeof s.xhr_dlMultistream === "undefined") {
@@ -595,15 +599,17 @@ function pingTest(done) {
 						//try to get accurate performance timing using performance api
 						var p = performance.getEntries();
 						p = p[p.length - 1];
-						var d = p.responseStart - p.requestStart; //best precision: chromium-based
-						if (d <= 0) d = p.duration; //edge: not so good precision because it also considers the overhead and there is no way to avoid it
+						var d = p.responseStart - p.requestStart;
+						if (d <= 0) d = p.duration;
 						if (d > 0 && d < instspd) instspd = d;
 					} catch (e) {
 						//if not possible, keep the estimate
-						//firefox can't access performance api from worker: worst precision
 						tverb("Performance API not supported, using estimate");
 					}
 				}
+				//noticed that some browsers randomly have 0ms ping
+				if(instspd<1) instspd=prevInstspd;
+				if(instspd<1) instspd=1;
 				var instjitter = Math.abs(instspd - prevInstspd);
 				if (i === 1) ping = instspd;
 				/* first ping, can't tell jitter yet*/ else {
