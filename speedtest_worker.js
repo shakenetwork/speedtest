@@ -1,5 +1,5 @@
 /*
-	HTML5 Speedtest v4.7.1
+	HTML5 Speedtest v4.7.2
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License
