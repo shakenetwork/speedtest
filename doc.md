@@ -41,6 +41,8 @@ Later we'll see how to use the test without PHP, and how to configure the teleme
 
 __Important:__ keep all the files together; all paths are relative to the js file
 
+__Important:__ If you expect to serve more than ~500 tests per day, you will need to sign up to [ipinfo.io](https://ipinfo.io) and edit `getIP_ipInfo_apikey.php` to set your access token.
+
 __Important:__ Make sure PHP is allowed to write to the directory where you're installing the speedtest because getIP.php needs to create a cache file to improve performance.
 
 ## Basic usage
