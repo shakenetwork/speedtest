@@ -7,6 +7,7 @@
 error_reporting(0);
 $ip = "";
 header('Content-Type: application/json; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -67,12 +68,16 @@ function distance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo) {
     $dist = sin($latitudeFrom * $rad) * sin($latitudeTo * $rad) + cos($latitudeFrom * $rad) * cos($latitudeTo * $rad) * cos($theta * $rad);
     return acos($dist) / $rad * 60 * 1.853;
 }
-
+function getIpInfoTokenString(){
+	require "getIP_ipInfo_apikey.php";
+	if(empty($IPINFO_APIKEY)) return "";
+	return "?token=".$IPINFO_APIKEY;
+}
 if (isset($_GET["isp"])) {
     $isp = "";
 	$rawIspInfo=null;
     try {
-        $json = file_get_contents("https://ipinfo.io/" . $ip . "/json");
+        $json = file_get_contents("https://ipinfo.io/" . $ip . "/json".getIpInfoTokenString());
         $details = json_decode($json, true);
 		$rawIspInfo=$details;
         if (array_key_exists("org", $details)){
@@ -96,7 +101,7 @@ if (isset($_GET["isp"])) {
 				if(file_exists($locFile)){
 					require $locFile;
 				}else{
-					$json = file_get_contents("https://ipinfo.io/json");
+					$json = file_get_contents("https://ipinfo.io/json".getIpInfoTokenString());
 					$details = json_decode($json, true);
 					if (array_key_exists("loc", $details)){
 						$serverLoc = $details["loc"];
