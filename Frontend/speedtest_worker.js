@@ -1,5 +1,5 @@
 /*
-	HTML5 Speedtest v4.7.1 MPOT
+	HTML5 Speedtest v4.7.2 MPOT
 	by Federico Dossena
 	https://github.com/adolfintel/speedtest/
 	GNU LGPLv3 License

@@ -5,8 +5,6 @@
 ## Multiple Points of Test
 This branch allows usage of multiple test servers instead of just 1. The client runs a server selector, which pings a list of test servers and chooses the one with the best ping.
 
-__This is a new and experimental feature__
-
 For the regular version, see the [`master` branch](https://github.com/adolfintel/speedtest).
 
 ## Try it
