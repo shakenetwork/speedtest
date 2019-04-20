@@ -66,7 +66,9 @@ function distance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo) {
     return acos($dist) / $rad * 60 * 1.853;
 }
 function getIpInfoTokenString(){
-	require "getIP_ipInfo_apikey.php";
+	$apikeyFile="getIP_ipInfo_apikey.php";
+	if(!file_exists($apikeyFile)) return "";
+	require $apikeyFile;
 	if(empty($IPINFO_APIKEY)) return "";
 	return "?token=".$IPINFO_APIKEY;
 }
