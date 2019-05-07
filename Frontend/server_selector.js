@@ -21,8 +21,8 @@ function ping(url, result) {
 			var instspd = new Date().getTime() - t; //rough timing estimate
 			try {
 				//try to get more accurate timing using performance API
-				var p = performance.getEntries();
-				p = p[p.length - 1];
+				var p = performance.getEntriesByName(url);
+				p=p[p.length-1];
 				var d = p.responseStart - p.requestStart;
 				if (d <= 0) d = p.duration;
 				if (d > 0 && d < instspd) instspd = d;
