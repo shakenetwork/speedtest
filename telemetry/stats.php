@@ -135,7 +135,7 @@ if($stats_password=="PASSWORD"){
 			}else die();
 	?>
 		<table>
-			<tr><th>Test ID</th><td><?=htmlspecialchars(($enable_id_obfuscation?obfuscateId($id):$id), ENT_HTML5, 'UTF-8') ?></td></tr>
+			<tr><th>Test ID</th><td><?=htmlspecialchars(($enable_id_obfuscation?(obfuscateId($id)." (deobfuscated: ".$id.")"):$id), ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>Date and time</th><td><?=htmlspecialchars($timestamp, ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>IP and ISP Info</th><td><?=$ip ?><br/><?=htmlspecialchars($ispinfo, ENT_HTML5, 'UTF-8') ?></td></tr>
 			<tr><th>User agent and locale</th><td><?=$ua ?><br/><?=htmlspecialchars($lang, ENT_HTML5, 'UTF-8') ?></td></tr>
