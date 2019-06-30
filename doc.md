@@ -4,8 +4,6 @@
 > Version 5.0
 > [https://github.com/adolfintel/speedtest/](https://github.com/adolfintel/speedtest/)
 
-The documentation is being rewritten. It will be done in a few days.
-
 ## Introduction
 HTML5 Speedtest is a Free and Open Source speedtest that you can host on your server(s), and users can run in their browser.
 
@@ -112,7 +110,7 @@ A login is required to access the interface. __Important__: change the default p
 Now that the test is installed, rename one of the examples to `index.html` and delete the other examples.  
 The best starting point for most people is `example-singleServer-pretty.html`. If you want to use telemetry and results sharing, use `example-singleServer-full.html` instead.
 
-If you don're not using telemetry and results sharing, you can delete the `results` folder too.
+If you're not using telemetry and results sharing, you can delete the `results` folder too.
 
 Details about the examples and how to make custom UIs will be discussed later.
 
@@ -463,7 +461,7 @@ When the test is finished, you can run it again if you want, or you can just des
 
 ## Implementation details
 The purpose of this section is to help developers who want to make changes to the inner workings of the speedtest.  
-It will be divided into 4 sections: `speedtest.js`, `speedtest_worker.js`, the `backend` files and the `resuls` files.
+It will be divided into 4 sections: `speedtest.js`, `speedtest_worker.js`, the `backend` files and the `results` files.
 
 ### `speedtest.js`
 This is the main interface between your webpage and the speedtest.
@@ -591,7 +589,7 @@ This test has a couple of complications:
 See the code for more implementation details.
 
 #### Ping + Jitter test
-The Ping/Jitter test __is NOT an ICMP ping__. This is a common misconsception. You cannot use ICMP over HTTP, and certainly not in a browser.
+The Ping/Jitter test __is NOT an ICMP ping__. This is a common misconception. You cannot use ICMP over HTTP, and certainly not in a browser.
 
 This test works by creating a persistent HTTP connection to the server, and then repeatedly downloading an empty file, and measuring how long it takes between the request and the response.
 
